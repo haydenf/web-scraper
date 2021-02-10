@@ -24,15 +24,12 @@ const puppeteer = require('puppeteer');
 		await page.keyboard.press('Enter');
 	
 		await page.waitForTimeout(3000);
-
-
 	
 		const grabData = await page.evaluate(() => {
 			const scrapedData = {
 				header:  'Business Name, Email, Website, Phone\r\n',
 				list: []
 			}
-
 			const table = document.querySelectorAll('.search-contact-card')
 
 			table.forEach((el) => {
@@ -44,9 +41,6 @@ const puppeteer = require('puppeteer');
 			})
 			return scrapedData
 		})
-
-
-		
 	
 		console.log(grabData)
 		await page.close();
