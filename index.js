@@ -1,3 +1,4 @@
+const { forEach } = require('async');
 const puppeteer = require('puppeteer');
 
 
@@ -24,34 +25,29 @@ const puppeteer = require('puppeteer');
 	
 		await page.waitForTimeout(3000);
 
+
+	
 		const grabData = await page.evaluate(() => {
 			const scrapedData = {
-				nameList: [],
-				phoneList: [],
-				emailList: [],
-				websiteList: []
+				header:  'Business Name, Email, Website, Phone\r\n',
+				list: []
 			}
 
-			const name = document.querySelectorAll('.listing-name')
-			name.forEach((el) => {
-				scrapedData.nameList.push(el.innerHTML)
-			})
-			const phones = document.querySelectorAll('.click-to-call .contact .contact-text')
-			phones.forEach((el) => {
-				scrapedData.phoneList.push(el.innerHTML)
-			})
-			const emails = document.querySelectorAll('.contact-email')
-			emails.forEach((el) => {
-				scrapedData.emailList.push(el.title)
-			})
-			const websites = document.querySelectorAll('.contact-url')
-			websites.forEach((el) => {
-				scrapedData.websiteList.push(el.href)
+			const table = document.querySelectorAll('.search-contact-card')
+
+			table.forEach((el) => {
+				let name = el.querySelector('.listing-name')
+				let website = el.querySelector('.contact-url') || ' '
+				let email = el.querySelector('.contact-email') || ' '
+				let phone = el.querySelector('.click-to-call') || ' '
+				scrapedData.list.push(`"${name.innerHTML}", "${website.href}", "${email.title}", "${phone.href}"`)
 			})
 			return scrapedData
 		})
 
 
+		
+	
 		console.log(grabData)
 		await page.close();
 		await browser.close();
@@ -60,3 +56,4 @@ const puppeteer = require('puppeteer');
 		await browser.close();
 		}
   })();
+
