@@ -23,39 +23,36 @@ const puppeteer = require('puppeteer');
 		await page.keyboard.press('Enter');
 	
 		await page.waitForTimeout(3000);
-		const grabNameData = await page.evaluate(() => {
-			const businessNamesList = []
+
+		const grabData = await page.evaluate(() => {
+			const scrapedData = {
+				nameList: [],
+				phoneList: [],
+				emailList: [],
+				websiteList: []
+			}
+
 			const name = document.querySelectorAll('.listing-name')
 			name.forEach((el) => {
-				businessNamesList.push(el.innerHTML)
+				scrapedData.nameList.push(el.innerHTML)
 			})
-			return businessNamesList
-		})
-		const grabPhoneData = await page.evaluate(() => {
-			const phoneList = []
 			const phones = document.querySelectorAll('.click-to-call .contact .contact-text')
 			phones.forEach((el) => {
-				phoneList.push(el.innerHTML)
+				scrapedData.phoneList.push(el.innerHTML)
 			})
-			return phoneList
-		})
-		const grabEmailData = await page.evaluate(() => {
-			const emailList = []
 			const emails = document.querySelectorAll('.contact-email')
 			emails.forEach((el) => {
-				emailList.push(el.title)
+				scrapedData.emailList.push(el.title)
 			})
-			return emailList
-		})
-		const grabWebsiteData = await page.evaluate(() => {
-			const websiteList = []
 			const websites = document.querySelectorAll('.contact-url')
 			websites.forEach((el) => {
-				websiteList.push(el.href)
+				scrapedData.websiteList.push(el.href)
 			})
-			return websiteList
+			return scrapedData
 		})
-		console.log(grabEmailData)
+
+
+		console.log(grabData)
 		await page.close();
 		await browser.close();
 		} catch (error) {
