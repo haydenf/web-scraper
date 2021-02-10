@@ -1,4 +1,3 @@
-const { forEach } = require('async');
 const puppeteer = require('puppeteer');
 
 
