@@ -1,9 +1,10 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 
 (async() => {
-	let businessType = 'trade'
-	let postOrSub = '2560'
+	const businessType = 'trade'
+	const postOrSub = '2560'
 	const link = 'https://www.yellowpages.com.au/';  
 	const browser = await puppeteer.launch({ devtools: true });
   
@@ -36,11 +37,20 @@ const puppeteer = require('puppeteer');
 				let website = el.querySelector('.contact-url') || ' '
 				let email = el.querySelector('.contact-email') || ' '
 				let phone = el.querySelector('.click-to-call') || ' '
-				scrapedData.list.push(`"${name.innerHTML}", "${website.href}", "${email.title}", "${phone.href}"`)
+				scrapedData.list.push([`"${name.innerHTML}", "${website.href || 'Not Found'}", "${email.title || 'Not Found'}", "${phone.href || 'Not Found'}"`])
 			})
 			return scrapedData
 		})
-	
+		
+		const generateCSV =  grabData.header + grabData.list.map(e => e.join(",")).join("\n");
+
+		fs.writeFile(`./${businessType + postOrSub + '--' + Date.now()}.csv`, generateCSV, function(err) {
+			if(err) {
+				console.log(err)
+			}
+			console.log('file was saved')
+		})
+
 		console.log(grabData)
 		await page.close();
 		await browser.close();
