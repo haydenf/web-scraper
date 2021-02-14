@@ -4,7 +4,7 @@ const fs = require('fs');
 
 (async() => {
 	const businessType = 'trade'
-	const postOrSub = '2560'
+	const postCode = '2560'
 	const link = 'https://www.yellowpages.com.au/';  
 	const browser = await puppeteer.launch({ devtools: true });
 	try {
@@ -19,9 +19,8 @@ const fs = require('fs');
 		await page.keyboard.type(businessType);
 		await page.waitForSelector('.search-field-layout > .search-field-layout-cell > .search-field-layout-inner-cell > .where > .liquid-input-text')
 		await page.click('.search-field-layout > .search-field-layout-cell > .search-field-layout-inner-cell > .where > .liquid-input-text')
-		await page.keyboard.type(postOrSub);
+		await page.keyboard.type(postCode);
 		await page.keyboard.press('Enter');
-	
 		await page.waitForTimeout(3000);
 
 		let pageN = 0;
@@ -41,9 +40,9 @@ const fs = require('fs');
 						})
 					return scrapedData
 				})
-				await page.waitForSelector('.flow-layout > .cell > .search-pagination-container > .button-pagination-container > .pagination:nth-child(2)')
-				await page.click('.flow-layout > .cell > .search-pagination-container > .button-pagination-container > .pagination:nth-child(2)')
-				await page.waitForTimeout(4000);
+				await page.goto(`https://www.yellowpages.com.au/search/listings?clue=${businessType}&locationClue=${postCode}&pageNumber=${pageN}&referredBy=www.yellowpages.com.au&selectedViewMode=list`, {
+					waitUntil: 'load'
+				});
 				if(pageN < 5) {
 					pageN++;
 					return await test(pageN)
@@ -54,26 +53,16 @@ const fs = require('fs');
 		}
 
 			const data = await test(pageN);
-			// await page.waitForSelector('.flow-layout > .cell > .search-pagination-container > .button-pagination-container > .pagination:nth-child(4)')
-			// await page.click('.flow-layout > .cell > .search-pagination-container > .button-pagination-container > .pagination:nth-child(4)')
-			// await page.waitForTimeout(6000);
-
 		
-
 			const generateCSV =  data.header + data.list.map(e => e.join(",")).join("\n");
 
-			fs.writeFile(`./${businessType + postOrSub + '--' + Date.now()}.csv`, generateCSV, function(err) {
+			fs.writeFile(`./${businessType + postCode + '--' + Date.now()}.csv`, generateCSV, function(err) {
 			if(err) {
 				console.log(err)
 				return
 			}
 			console.log('file was saved')
 		})
-
-			
-	
-
-
 
 		await page.close();
 		await browser.close();
@@ -84,5 +73,3 @@ const fs = require('fs');
   })();
 
  
-	
-
