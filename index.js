@@ -2,8 +2,8 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 (async() => {
-	const businessType = 'trade'
-	const postCode = '2560'
+	const businessType = 'cafe'
+	const postCode = '2000'
 	const link = 'https://www.yellowpages.com.au/';  
 	const browser = await puppeteer.launch({ devtools: true });
 	try {
@@ -25,7 +25,7 @@ const fs = require('fs');
 
 		let pageN = 1;
 		const scrapedData = {
-			header:  'Business Name, Email, Website, Phone\r\n',
+			header:  'Business Name, Website, Email, Phone\r\n',
 			list: []
 		}
 
@@ -42,15 +42,15 @@ const fs = require('fs');
 						})
 					return list
 				})
-				
+
 				await page.goto(`https://www.yellowpages.com.au/search/listings?clue=${businessType}&locationClue=${postCode}&pageNumber=${pageN}&referredBy=www.yellowpages.com.au&selectedViewMode=list`, {
 					waitUntil: 'load'
 				});
 
-				if(pageN < 5) {
+				if(pageN < 10) {
 					pageN++;
 					scrapedData.list.push(eachPage)
-					return await test(pageN, scrapedData)
+					return await dataFetch(pageN, scrapedData)
 				} 
 			return
 		}
